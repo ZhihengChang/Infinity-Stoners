@@ -22,3 +22,12 @@ A multiplayer card game of war. Create a deck of cards and split evenly between 
 ---
 ### Team members
 Keegan Whelan, Brandon Lafontant, and Ryan Chang
+
+# Comments
+1. Good description of the game scenario
+2. Need to be more specific on the deliverables by adding description to each of the items in the deliverables section 
+
+For example:
+* Cardgame backend: What do you implement for the backend?
+3. Adjust the plan as we have total 5 weeks for the project and rougly 4 weeks for implementation.
+4. ProgressUpdates.md is missing!
