@@ -7,10 +7,6 @@ public class Player {
 	private boolean win;
 	private boolean atWar;
 
-
-	/**
-	 * 
-	 */
 	public Player() {
 		deck = new Deck();
 		removedCards = new Deck();

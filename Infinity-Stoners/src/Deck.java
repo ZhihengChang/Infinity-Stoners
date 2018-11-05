@@ -15,6 +15,10 @@ public class Deck extends Pile {
 	public Deck() {
 		cards = new ArrayList<Card>();
 	}
+	
+	public void addCard(Card o) {
+		cards.add(o);
+	}
 
 	/**
 	 * @param args
