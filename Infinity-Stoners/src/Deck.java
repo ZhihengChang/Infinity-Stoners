@@ -9,15 +9,57 @@ import java.util.List;
 public class Deck extends Pile {
 	private List<Card> cards;
 	
-	/**
-	 * 
-	 */
 	public Deck() {
 		cards = new ArrayList<Card>();
 	}
+
+	/*
+	 * add a card object to the deck
+	 * @param  Card object o
+	 */
+	public void addCardToDeck(Card o) {
+		this.cards.add(o);
+	}
 	
-	public void addCard(Card o) {
-		cards.add(o);
+	/*
+	 * remove the card on the top of the deck
+	 * @return removed card
+	 */
+	public Card removeTop() {
+		return cards.remove(0);
+	}
+	
+	/*
+	 * clear the entire deck
+	 */
+	public void clearDeck() {
+		List<Card> emptyDeck = new ArrayList<Card>();
+		cards = emptyDeck;
+	}
+	
+	/*
+	 * get the number of cards in the deck
+	 * @return the size of the deck
+	 */
+	public int getNumberOfCards() {
+		return cards.size();
+	}
+	
+	/*
+	 * check is the deck empty or not
+	 * @return true or false
+	 */
+	public boolean isEmpty() {
+		return cards.size() == 0;
+	}
+	
+	
+	public String toString() {
+		String str = "Deck: ";
+		for(Card o : cards) {
+			str += o.toString() + " ";
+		}
+		return str;
 	}
 
 	/**

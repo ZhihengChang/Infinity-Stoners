@@ -13,8 +13,6 @@ public class Player {
 		win = false;
 		atWar = false;
 	}
-	
-
 
 	/**
 	 * @param args
