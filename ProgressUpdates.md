@@ -1,6 +1,6 @@
-Proggress update (10/29-11/5)
+Progress update (10/29-11/5)
 
-### What we did last weeK?
+### What we did last week?
 
 We created different classes in java (We decided to switch from python to java); Card, Deck, Player, Game, Rank, and Runner. Each
 class controls a different part of the game. Card is an object and will represent each card in the game.  Deck and pile are 
@@ -21,7 +21,7 @@ The only challenge we know we will face is connecting sockets in java to make it
 python but not java. As a group we've started research so that we will have an idea of what to do once we've completed the game.
 Other than this we are confident we can finish the project on time and have a fully functioning game.
 
-### Week 2
+### Week 2 (11/19)
 
 1. Last week our team completed our 'Deck' and 'Player' classes
 2. This week our goal is to start developing a graphical interface that shows the opponent's card and the player's card. We may further develop the graphical interface as time allows. We will also continue to work on perfecting our socket connections in order to get the game working properly on two computers.
