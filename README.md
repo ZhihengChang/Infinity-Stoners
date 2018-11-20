@@ -9,6 +9,7 @@ A multiplayer card game of war. Create a deck of cards and split evenly between 
 ---
 - Online *War* card game
 - Card game backend
+    A player, deck, game, hand, pile, rank, runner, and suit class that controls different elements of the game
 - Documentation
 ---
 ### Plan
