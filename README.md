@@ -15,10 +15,9 @@ A multiplayer card game of war. Create a deck of cards and split evenly between 
 ---
 1. Week one: create deck of cards in python
 2. Week two: Distribute cards between players
-3. Week three: create simple war game with one user
-4. Week four: connect clients and server so they can play game
+3. Week three: connect clients and server so they can play game
+4. Week four: Work on socket connection if it still needs to be implemented
 5. Week five: make sure everything works and see if improvements can be made
-6. Week six: get ready for presentation
 ---
 ### Team members
 Keegan Whelan, Brandon Lafontant, and Ryan Chang
