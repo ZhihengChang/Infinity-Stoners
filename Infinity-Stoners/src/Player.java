@@ -24,8 +24,8 @@ public class Player {
 	 * check is there any card left in player's deck
 	 * @return true or false
 	 */
-	public boolean noCardsLeft() {
-		return deck.isEmpty();
+	public boolean hasCardsLeft() {
+		return !deck.isEmpty();
 	}
 	
 	/*
