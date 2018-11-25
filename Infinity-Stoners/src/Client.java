@@ -48,9 +48,7 @@ public class Client {
 	
 	private String getServerMessage() {
 		try {
-			input = socket.getInputStream();
-			isr = new InputStreamReader(input);
-			br = new BufferedReader(isr);
+			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String message = br.readLine();
 			//System.out.println("Message received from the server: " + str);
 			return message;
@@ -62,9 +60,20 @@ public class Client {
 	
 	private void send(Card o) {
 		try {
-			output = socket.getOutputStream();
-			os = new ObjectOutputStream(output);
+			os = new ObjectOutputStream(socket.getOutputStream());
 			os.writeObject(o);
+			os.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+	}
+	
+	private void send(String message) {
+		try {
+            bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            bw.write(message + "\n");
+            bw.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -74,6 +83,7 @@ public class Client {
 	public static void main(String[] args) {
 		if (args.length != 0) {
 			Client client = new Client(args[0], "127.0.0.1", 5000);
+			client.send(args[0]);
 			
 			Scanner input = new Scanner(System.in);
 			System.out.println("Enter Player name: ");
@@ -81,16 +91,17 @@ public class Client {
 			input.close();
 			System.out.println("Player " + client.getPlayer().getName() + " is ready!");
 			System.out.println("Searching for another player...");
-			
-			if(client.getServerMessage().equals("founded")) {
-				System.out.println("Player founded!");
-				System.out.println("Starting the game...");
-				
-			}else {
-				System.out.println("No Player founded, try again later");
-				System.out.println("Exiting...");
-				System.exit(0);
+			String message = client.getServerMessage();
+			while(!message.equals("founded")) {
+				System.out.println("...");
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+			System.out.println("Player founded!");
+			System.out.println("Starting the game...");
 			
 			//String command = input.nextLine();
 			//while(command.equals("")) {

@@ -18,43 +18,50 @@ public class Server {
     private InputStream in; 
     private OutputStream out;
     private OutputStreamWriter osw;
+    private BufferedReader br;
     private BufferedWriter bw;
     
+    
 	public Server(int port) {
-		
-			try {
-				server = new ServerSocket(port);
-				System.out.println("Server starting...");
-				
-				while(true) {
+		try {
+			server = new ServerSocket(port);
+			System.out.println("Server starting...");
+			while(true) {
+				System.out.println("waiting for client...");
 				socket = server.accept();
 				System.out.println("Server started");
-				Thread.sleep(10000);
-				
-				send("founded");
-				}
-			}catch(IOException i) {
-				
-			}catch(InterruptedException e) {
-				
+				//Thread.sleep(10000);
+				String message = receive();
+				send("waiting");
+				System.out.println("waiting message sent to client");
+
 			}
+		}catch(IOException i) {
+				
+		}
 		
 	}
 	
 	private void send(String message) {
-		System.out.println("is "+message);
 		try {
-			out = socket.getOutputStream();
-            	osw = new OutputStreamWriter(out);
-            	bw = new BufferedWriter(osw);
-            	bw.write(message);
-            	//System.out.println("Message sent to the client is "+message);
+            	bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            	bw.write(message + "\n");
             	bw.flush();
-            	bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
         
+	}
+	
+	private String receive() {
+		try {
+			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String message = br.readLine();
+			return message;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static void main(String[] args) {
