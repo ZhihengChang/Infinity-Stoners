@@ -51,10 +51,9 @@ public class Client {
 			input = socket.getInputStream();
 			isr = new InputStreamReader(input);
 			br = new BufferedReader(isr);
-			String str = br.readLine();
-			socket.close();
-			System.out.println("Message received from the server : " + str);
-			return str;
+			String message = br.readLine();
+			//System.out.println("Message received from the server: " + str);
+			return message;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -94,7 +93,6 @@ public class Client {
 			}
 			
 			//String command = input.nextLine();
-			System.out.println("ahdjfha;kdfj;a");
 			//while(command.equals("")) {
 				
 			//}

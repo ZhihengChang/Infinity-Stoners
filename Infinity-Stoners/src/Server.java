@@ -48,8 +48,9 @@ public class Server {
             	osw = new OutputStreamWriter(out);
             	bw = new BufferedWriter(osw);
             	bw.write(message);
-            	System.out.println("Message sent to the client is "+message);
+            	//System.out.println("Message sent to the client is "+message);
             	bw.flush();
+            	bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
