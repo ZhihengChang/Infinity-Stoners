@@ -26,3 +26,8 @@ Other than this we are confident we can finish the project on time and have a fu
 1. Last week our team completed our 'Deck' and 'Player' classes
 2. This week our goal is to start developing a graphical interface that shows the opponent's card and the player's card. We may further develop the graphical interface as time allows. We will also continue to work on perfecting our socket connections in order to get the game working properly on two computers.
 3. We are stil having trouble with the multiplayer capability, but since we are done with the base code-- after intensive testing, we will focus our strengths on establishing a socket connection to create a multiplayer game.
+
+# Comments
+1. Missing week 3 and 4 updates
+2. Expect to see a working version of the game on Nov 26
+3. Use bullet points on updates and keep it brief and to the points
