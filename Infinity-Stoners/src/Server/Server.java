@@ -221,7 +221,7 @@ public class Server {
 				if(CommTool.wait4key(getClientFile(client1), CommTool.ACTION_NEWG, 2) &&
 						CommTool.wait4key(getClientFile(client2), CommTool.ACTION_NEWG, 2)) {
 					//new game
-					game_counter++;
+					//game_counter++;
 					
 					continue;
 					
