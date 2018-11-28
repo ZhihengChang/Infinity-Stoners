@@ -1,3 +1,7 @@
+package game;
+
+import java.io.Serializable;
+
 /**
  * 
  */
@@ -8,7 +12,7 @@
  * @author 
  *
  */
-public class Card implements Comparable<Card> {
+public class Card implements Comparable<Card> ,Serializable {
 
 	private final String GRAPHIC;
 	private final int PRIORITY;

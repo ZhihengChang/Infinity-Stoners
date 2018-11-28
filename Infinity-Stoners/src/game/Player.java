@@ -1,11 +1,23 @@
+package game;
+
 public class Player {
+	private String id;
 	private Deck deck;
 	private Deck removedCards;
 	private String name;
 	private boolean win;
 	private boolean atWar;
 
+	public Player(String id) {
+		this.id = id;
+		deck = new Deck();
+		removedCards = new Deck();
+		win = false;
+		atWar = false;
+	}
+	
 	public Player() {
+		this.id = null;
 		deck = new Deck();
 		removedCards = new Deck();
 		win = false;

@@ -1,4 +1,6 @@
+package game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,7 +8,7 @@ import java.util.List;
  * @author 
  *
  */
-public class Deck extends Pile {
+public class Deck extends Pile implements Serializable {
 	private List<Card> cards;
 	
 	public Deck() {
@@ -19,6 +21,10 @@ public class Deck extends Pile {
 	 */
 	public void addCardToDeck(Card o) {
 		this.cards.add(o);
+	}
+	
+	public Card getCard(int index) {
+		return cards.get(index);
 	}
 	
 	/*

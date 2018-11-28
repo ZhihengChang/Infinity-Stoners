@@ -1,7 +1,4 @@
-/**
- * 
- */
-
+package game;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,11 +62,6 @@ public class Pile {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Pile p = new Pile();
-		p.shuffle();
-		p.shuffle();
-		System.out.println(p.toString());
-		System.out.println(p.getSize());
 		
 
 	}

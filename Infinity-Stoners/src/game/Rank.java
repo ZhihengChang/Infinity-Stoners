@@ -1,3 +1,4 @@
+package game;
 
 public enum Rank {
 	//Element   Display Name    Graphic     Priority 
