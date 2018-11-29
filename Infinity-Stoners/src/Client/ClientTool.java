@@ -10,6 +10,8 @@ public final class ClientTool {
     final static String ACTION_SHOWC = "ACTION:ShowCard";
     final static String ACTION_EXIT = "ACTION:Exit";
     final static String ACTION_NEWG = "ACTION:NewGame";
+    final static String ACTION_RESULT = "ACTION:Result";
+    final static String ACTION_TURNEND = "ACTION:TurnEnd";
     
     final static String RESULT_WIN = "RESULT:Win";
     final static String RESULT_LOST = "RESULT:Lost";
@@ -19,7 +21,6 @@ public final class ClientTool {
     final static String GAME_TIMEOUT = "GAME:TimeOut";
     
     public static String get_input_from_screen(Scanner input, String msg) {
-		String ret;
 		System.out.println(msg);
 		return input.nextLine().trim();
 }

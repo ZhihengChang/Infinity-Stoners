@@ -39,6 +39,7 @@ public class Server {
     		
     }
     
+    
     public void establish() throws IOException {
     		server = new ServerSocket(port_num);
     		
@@ -56,7 +57,7 @@ public class Server {
     			System.out.println("client soket: " + sockets[client_counter]);
     			Clients.put(sockets[client_counter], dis.readUTF());
     			s_dis.put(sockets[client_counter], new DataInputStream(sockets[client_counter].getInputStream()));
-    			System.out.println();
+    			
     			s_dos.put(sockets[client_counter], new DataOutputStream(sockets[client_counter].getOutputStream()));
     			
     			client_counter++;
@@ -91,7 +92,7 @@ public class Server {
     public String getServerFile(Socket client) {
 		return CommTool.FILE_PERFIX_SERVER + Clients.get(client)  + ".txt";
 }
-    public void do_newturn(Socket client1, Socket client2, int pre_turn) throws Exception{
+    public boolean do_newturn(Socket client1, Socket client2, int game_counter) throws Exception{
     		// check client if new turn
     		String client1_data_file = getClientFile(client1);
     		String client2_data_file = getClientFile(client2);
@@ -101,22 +102,27 @@ public class Server {
     		
     		if(client1_data.equals("") || client1_data.equals("")) {
     			System.out.println("ERROR:client data file is not ready!");
-    			return;
+    			return false;
     		}
     		
     		// num, string key, ""
     		if(client1_data.equals(CommTool.ACTION_NEWT) || client2_data.equals(CommTool.ACTION_NEWT)) {
     			System.out.println("ERROR:invalid request");
-    			return;
+    			return false;
     		}
 
-    		if(Integer.parseInt(client1_data) > pre_turn && Integer.parseInt(client2_data) > pre_turn) {
+    		if(Integer.parseInt(client1_data) == game_counter && Integer.parseInt(client2_data) == game_counter) {
     			do_show_card(client1, client2);
     			do_result(client1, client2);
+    			if(do_turn_end(client1, client2)) 
+    				return true;
+    			
     		}else {
     			System.out.println("ERROR:invalid turn");
-    			return;
+    			return false;
     		}
+    		
+    		return false;
 
     		
     }
@@ -124,7 +130,7 @@ public class Server {
     public void do_show_card(Socket client1, Socket client2) throws Exception {
     	 
     		Card player1_card = getPlayer(client1).revealACard();
-		Card player2_card = getPlayer(client2).revealACard();
+		Card player2_card = getPlayer(client2).revealACard();	
 		server_action(client1, CommTool.ACTION_SHOWC + ":" + player1_card.toString() + ":" + player2_card.toString());
 		server_action(client2, CommTool.ACTION_SHOWC + ":" + player2_card.toString() + ":" + player1_card.toString());
 
@@ -138,124 +144,209 @@ public class Server {
     		Deck player2_removedCards = player2.getRemovedCards();
     		
     		//check
-    		System.out.println("player1 cards size:" + player1_removedCards.getSize());
+    		System.out.println("player1 removed cards deck size:" + player1_removedCards.getSize());
     		Card card_to_compare_p1, card_to_compare_p2;
     		
-    		if(player1_removedCards.getSize() > 0)
+    		if(player1_removedCards.getSize() > 0) {
     			card_to_compare_p1 = player1_removedCards.getCard(player1_removedCards.getSize()-1);
-    		else
+    		}else {
+    			System.out.print("Player1: there is no removed cards");
     			card_to_compare_p1 = null;
+    		}
     		
-    		System.out.println("player2 cards size:" + player2_removedCards.getSize());
-    		if(player2_removedCards.getSize() > 0)
+    		System.out.println("Player 2 removed cards deck size:" + player2_removedCards.getSize());
+    		if(player2_removedCards.getSize() > 0) {
     			card_to_compare_p2 = player2_removedCards.getCard(player2_removedCards.getSize()-1);
-    		else
+    		}else {
+    			System.out.print("Player2: there is no removed cards");
     			card_to_compare_p2 = null;
-		
+    		}
 		int result = card_to_compare_p1.compareTo(card_to_compare_p2);
 		
+	
+		String client1_result = "";
+		String client2_result = "";
+
 		if(result == 0) {
 			player1.setWar(true);
 			player2.setWar(true);
-			server_action(client1,CommTool.RESULT_WAR);
-			server_action(client2,CommTool.RESULT_WAR);
+			client1_result = CommTool.RESULT_WAR;
+			client2_result = CommTool.RESULT_WAR;
 		}else {
 			player1.setWar(false);
 			player2.setWar(false);
 			
 			if(result > 0) {
 				int cards_player1_gets = checkout(player1, player2);
-				server_action(client1,CommTool.RESULT_WIN + ":" + cards_player1_gets);
-				server_action(client2,CommTool.RESULT_LOST);
+				client1_result = CommTool.RESULT_WIN + ":" + cards_player1_gets;
+				client2_result = CommTool.RESULT_LOST;
 			}
 			else if(result < 0) {
 				int cards_player2_gets = checkout(player2, player1);
-				server_action(client2,CommTool.RESULT_WIN + ":" + cards_player2_gets);
-				server_action(client1,CommTool.RESULT_LOST);
+				client1_result = CommTool.RESULT_LOST;
+				client2_result = CommTool.RESULT_WIN + ":" + cards_player2_gets;
 			}
 		}
 		
+		boolean result_sendto_player1 = false;
+		boolean result_sendto_player2 = false;
+		for(int i=0; i< 40; i++) {
+			if(!result_sendto_player1 && CommTool.check_response(getClientFile(client1), CommTool.ACTION_RESULT)) {
+				server_action(client1,client1_result);
+				result_sendto_player1 = true;
+			}
+			if(!result_sendto_player1 && CommTool.check_response(getClientFile(client1), CommTool.ACTION_EXIT)) {
+				result_sendto_player1 = true;
+			}
+			if(!result_sendto_player2 && CommTool.check_response(getClientFile(client2), CommTool.ACTION_RESULT)) {
+				server_action(client2,client2_result);
+				result_sendto_player2 = true;
+			}
+			if(!result_sendto_player2 && CommTool.check_response(getClientFile(client2), CommTool.ACTION_EXIT)) {
+				result_sendto_player1 = true;
+			}
+			if(result_sendto_player1 && result_sendto_player2) {
+				break;
+			}
+			Thread.sleep(2000);
+		}
+		//
 		
+		
+		//send result
+		
+		
+    }
+    
+    public boolean do_turn_end(Socket client1, Socket client2) throws InterruptedException {
+    	
+		String client1_file = getClientFile(client1);
+		String client2_file = getClientFile(client2);
+		while(true){
+			if(CommTool.check_response(client1_file, CommTool.ACTION_TURNEND) && CommTool.check_response(client2_file, CommTool.ACTION_TURNEND)) {
+				return true;
+			}
+			if(CommTool.check_response(client1_file, CommTool.ACTION_EXIT) || CommTool.check_response(client2_file, CommTool.ACTION_EXIT)) {
+				break;
+			}
+
+			Thread.sleep(20000);
+		}
+		return false;
     }
     
     public Player getPlayer(Socket client) {
     		return players.get(Clients.get(client));
     }
     
-    public void game_start(Socket client1, Socket client2) throws Exception {
-    		initializeTheGame(client1, client2);
-    		
-    		//Get two players
+    public void send_start(Socket client1, Socket client2) throws Exception{
+    		CommTool.deletFile(getClientFile(client1));
+    		CommTool.deletFile(getClientFile(client2));
+    		CommTool.deletFile(getServerFile(client1));
+    		CommTool.deletFile(getServerFile(client2));
+    	
+    		server_action(client1,CommTool.ACTION_START);
+		server_action(client2,CommTool.ACTION_START);
+		
     		Player player1 = players.get(Clients.get(client1));
 		Player player2 = players.get(Clients.get(client2));
+		setDecksToPlayer(player1, player2);
+		//set player name
+		set_player_name(player1, getClientFile(client1));
+		set_player_name(player2, getClientFile(client2));
+    	
+    }
+    
+    //Get action from client
+    public String get_user_action(Socket client) throws Exception{
+    		return CommTool.readfile(getClientFile(client));
+    }
+    
+    
+    public boolean is_game_end(Socket client1, Socket client2, int game_counter) throws Exception{
+    		Player player1 = players.get(Clients.get(client1));
+		Player player2 = players.get(Clients.get(client2));
+		
+		System.out.println("check game end: game counter" + game_counter);
+		System.out.println("player1 deck status: " + player1.hasCardsLeft());
+		System.out.println("player2 deck status: " + player2.hasCardsLeft());
+    
+		// Step 4: If no card, game over
+		if(!player1.hasCardsLeft() || !player2.hasCardsLeft()) {
+			String winner;;
+			if(player1.hasCardsLeft() || !player2.hasCardsLeft()) { //player2 win
+				//String winner = player1.getName();
+				//server_action(client1, CommTool.GAME_END + ":" + winner + ":" + game_counter);
+				winner = player2.getName();
+			}else {
+				winner = player1.getName();
+			}
+			server_action(client1, CommTool.GAME_END + ":" + winner + ":" + game_counter);
+			server_action(client2, CommTool.GAME_END + ":" + winner + ":" + game_counter);
+			
+			//game keep runing -> ready
+			//reset player's deck
+			//reset counter
+			if(CommTool.wait4key(getClientFile(client1), CommTool.ACTION_NEWG, 2) &&
+					CommTool.wait4key(getClientFile(client2), CommTool.ACTION_NEWG, 2)) {
+				//new game
+				//game_counter++;
+				System.out.println("Do new game: uninitialized");
+				return false;
+				
+			}	
+			
+			if(CommTool.wait4key(getClientFile(client1), CommTool.ACTION_EXIT, 1) ||
+					CommTool.wait4key(getClientFile(client2), CommTool.ACTION_EXIT, 1)) {
+				System.out.println("Clients ask to exit!");
+				return true;
+ 
+			}else {//break;
+				System.out.println("No get response from client...!");
+				return true;
+			}
+		}
+		//game end
+		//print 
+		return false;
+    }
+    public void game_start(Socket client1, Socket client2) throws Exception {
     		
-		//Counter for game
+		send_start(client1, client2);
+
+		//Init Counter for game
 		int game_counter = 0;
 		
 		while(true) {
+			game_counter++;
 			// Step 1: Send ready to client
 			System.out.println("To Ready");
 			server_action(client1,CommTool.ACTION_READY);
 			server_action(client2,CommTool.ACTION_READY);
+			//If user want to exit?
 			//new turn
-			do_newturn(client1,client2,game_counter);
-			game_counter++;
-			
-			// Step 2:Send showcard
-
-			// Step 3: Send Result
-
-			// Step 4: If no card, game over
-			if(!player1.hasCardsLeft() || !player2.hasCardsLeft()) {
-				String winner;;
-				if(player1.hasCardsLeft() || !player2.hasCardsLeft()) { //player2 win
-					//String winner = player1.getName();
-					//server_action(client1, CommTool.GAME_END + ":" + winner + ":" + game_counter);
-					winner = player2.getName();
-				}else {
-					winner = player1.getName();
-				}
-				server_action(client1, CommTool.GAME_END + ":" + winner + ":" + game_counter);
-				server_action(client2, CommTool.GAME_END + ":" + winner + ":" + game_counter);
-				
-				if(CommTool.wait4key(getClientFile(client1), CommTool.ACTION_NEWG, 2) &&
-						CommTool.wait4key(getClientFile(client2), CommTool.ACTION_NEWG, 2)) {
-					//new game
-					//game_counter++;
-					
-					continue;
-					
-				}	
-				if(CommTool.wait4key(getClientFile(client1), CommTool.ACTION_EXIT, 1) ||
-						CommTool.wait4key(getClientFile(client2), CommTool.ACTION_EXIT, 1)) {
-					//Exit
- 
-					break;
-				}else {//break;
-					System.out.println("No get response from client...!");
-					break;
-					
-				}
-
+			System.out.println("Game Start counter:" + game_counter);
+			if(!do_newturn(client1,client2,game_counter)) {
+				break;
 			}
+			System.out.println("newturn done! - game counter:" + game_counter);
+			if(is_game_end(client1,client2, game_counter)) {
+				break;
+			};
+
 		}
-		
 		// Step 4: Game end
 		//do_game_end
-		closeConnections(client1);
-		closeConnections(client2);
-		
+		try {
+			closeConnections(client1);
+			closeConnections(client2);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		
     }
     
-    public void initializeTheGame(Socket client1, Socket client2) throws Exception {
-    		
-		//send start
-    		server_action(client1,CommTool.ACTION_START);
-    		server_action(client2,CommTool.ACTION_START);
-		//set player name
-		initialize_players(client1, client2);
-    }
+  
     
     public void initialize_players(Socket client1, Socket client2) throws Exception{
     		Player player1 = players.get(Clients.get(client1));
@@ -267,9 +358,9 @@ public class Server {
     }
     
     public void set_player_name(Player p, String config) throws Exception{
-    		String player_name = CommTool.wait4return(config, CommTool.PLAYER, 3);
+    		String player_name = CommTool.wait4return(config, CommTool.PLAYER, 30);
 		if(player_name != null && player_name.length() !=0) {
-			System.out.println("Player name: " + player_name);
+			System.out.println();
 			p.setName(player_name);	
 
 		}else {
@@ -305,113 +396,7 @@ public class Server {
 		 
  
     }
-   
-   
-    
-    /*
-	 * start -> ready -> loop [ enter -> server:result -> client:result -> enter ... -> result:end]
-	 * 
-	 */
-    
-    public void game_start2(Socket client1, Socket client2) {
-    		boolean new_game = true;
-	    	while(new_game) {
-	    		//initializeTheGame(client1, client2);
-	    		try {
-	    			int pre_turn = 0;
-	    			
-	    			String client1_data_file = getClientFile(client1);
-	        		String client2_data_file = getClientFile(client2);
-	        		
-	        		Player player1 = players.get(Clients.get(client1));
-				Player player2 = players.get(Clients.get(client2));
-	        		
-	        		while(player1.hasCardsLeft() && player2.hasCardsLeft()) {
-	        			System.out.println("game_start comf");
-	        			CommTool.wirte2file(getClientFile(client1), CommTool.ACTION_READY);
-	        			CommTool.wirte2file(getClientFile(client2), CommTool.ACTION_READY);
-	        			
-	        			//NewTurn
-	        			boolean is_new_turn_p1 = CommTool.wait4key(client1_data_file, CommTool.ACTION_NEWT, 3);
-	        			boolean is_new_turn_p2 = CommTool.wait4key(client2_data_file, CommTool.ACTION_NEWT, 3);
-	        			if(!is_new_turn_p1 || !is_new_turn_p2) {
-	        				break;
-	        			}
-	        			
-	        			int player1_turn_counter = Integer.parseInt(CommTool.readfile(client1_data_file).split(":")[2]);
-	        			int player2_turn_counter = Integer.parseInt(CommTool.readfile(client2_data_file).split(":")[2]);
-	        			
-	        			
-	        			//String[] reveal_card_player1 = CommTool.wait4message(client1_data_file, "ACTION", 3);
-	        			//String[] reveal_card_player2 = CommTool.wait4message(client1_data_file, "ACTION", 3);
-	        	
-        				if(player1_turn_counter > pre_turn && player2_turn_counter > pre_turn) {
-        					if(player1_turn_counter != player2_turn_counter) {
-        						System.out.println("Invalid turn");
-        						break;
-        					}
-        					Card player1_card = player1.revealACard();
-        					Card player2_card = player2.revealACard();
-        					CommTool.wirte2file(client1_data_file, CommTool.ACTION_SHOWC + ":" + player1_card.toString() + ":" + player2_card.toString());
-        					CommTool.wirte2file(client2_data_file, CommTool.ACTION_SHOWC + ":" + player2_card.toString() + ":" + player1_card.toString());
-        					
-        					
-        					int result = player1_card.compareTo(player2_card);
-        					if(result == 0) {
-        						player1.setWar(true);
-        						player2.setWar(true);
-        						CommTool.wirte2file(client1_data_file, CommTool.RESULT_WAR);
-            					CommTool.wirte2file(client2_data_file, CommTool.RESULT_WAR);
-        					}else {
-        						player1.setWar(false);
-        						player2.setWar(false);
-        						
-        						if(result > 0) {
-        							int cards_player1_gets = checkout(player1, player2);
-        							CommTool.wirte2file(client1_data_file, CommTool.RESULT_WIN + ":" + cards_player1_gets);
-                					CommTool.wirte2file(client2_data_file, CommTool.RESULT_LOST);
-        						}
-        						else if(result < 0) {
-        							int cards_player2_gets = checkout(player2, player1);
-        							CommTool.wirte2file(client1_data_file, CommTool.RESULT_LOST);
-                					CommTool.wirte2file(client2_data_file, CommTool.RESULT_WIN + ":" + cards_player2_gets);
-        						}
-        					}
-        					
-        					pre_turn = player1_turn_counter;
-        				
-        				}
-	        		}
-	        		//Game ends
-	        		//p1 wins
-	        		if(player1.hasCardsLeft() && !player2.hasCardsLeft()) {
-	        			CommTool.wirte2file(client1_data_file, CommTool.GAME_END + ":" + player1.getName());
-	        			String[] player1_response = CommTool.wait4message(client1_data_file, "ACTION", 3);
-		    			String[] player2_response = CommTool.wait4message(client1_data_file, "ACTION", 3);
-		    			if(!player1_response[1].equals("NewGame") || !player2_response[1].equals("NewGame")) {
-		    				new_game = false;
-		    			}
-	        		}else {
-	        			CommTool.wirte2file(client1_data_file, CommTool.GAME_TIMEOUT);
-	        			CommTool.wirte2file(client1_data_file, CommTool.GAME_TIMEOUT);
-	        			new_game = false;
-	        		}
-	        		
-			} catch (IOException e) {
-					// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    	}
-	    
-	    	try {
-	    		closeConnections(client1);
-	    		closeConnections(client2);
-		} catch (IOException e) {	
-			e.printStackTrace();
-		}
-	    		
-    }
-    
+
     //return how many cards winner gets
     //p1 is the winner: gets all p2's removedCards
     public int checkout(Player p1, Player p2) {

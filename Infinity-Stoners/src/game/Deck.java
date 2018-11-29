@@ -59,6 +59,10 @@ public class Deck extends Pile implements Serializable {
 		return cards.size() == 0;
 	}
 	
+	public int getSize() {
+		return cards.size();
+	}
+	
 	
 	public String toString() {
 		String str = "Deck: ";

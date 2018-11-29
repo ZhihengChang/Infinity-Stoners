@@ -65,7 +65,7 @@ public class ClientController extends Thread {
 			s_dos.writeUTF(CommTool.ACTION_START);
 			s_dos.flush();
 			String player_name = s_dis.readUTF();
-			CommTool.wirte2file(client_filename, CommTool.PLAYER + player_name);
+			CommTool.wirte2file(client_filename, CommTool.PLAYER + ":" + player_name);
 		}
 	}
 	//Client => thread: Exit, NewT
@@ -88,6 +88,7 @@ public class ClientController extends Thread {
 			if(user_response.equals(CommTool.ACTION_NEWT)) {
 				turn_counter++;
 				user_response += ":" + turn_counter;
+				System.out.println("thread:newturn counter:" + turn_counter);
 			}		
 			CommTool.wirte2file(client_filename, user_response );				
 		}
@@ -104,13 +105,17 @@ public class ClientController extends Thread {
 		s_response = CommTool.readfile(server_filename);
 		Thread.sleep(2000);
 		System.out.println(server_filename + ": " + s_response);
-	
+		//WAIT USER ENTER 
 		if(s_response.startsWith(CommTool.ACTION_SHOWC)) {
 			System.out.println("4: showCard");
 			s_dos.writeUTF(s_response);
 			s_dos.flush();
+			String user_response = s_dis.readUTF();
+			CommTool.wirte2file(client_filename, user_response );
 		}
 	}
+	
+	
 	public void do_result() throws Exception{
 		if(!CommTool.is_data_ready(server_filename,3)) {
 			System.out.println("ERROR:No found data file");
@@ -121,15 +126,14 @@ public class ClientController extends Thread {
 		s_response = CommTool.readfile(server_filename);
 		Thread.sleep(2000);
 		System.out.println(server_filename + ": " + s_response);	
-		
-		
-		
+
 		//else if(s_response.substring(0, CommTool.RESULT_WIN.length()).equals(CommTool.RESULT_WIN)) {
 		if(s_response.startsWith(CommTool.RESULT_WIN) || s_response.startsWith(CommTool.RESULT_LOST) ||
 			s_response.startsWith(CommTool.RESULT_WAR)) {
 			s_dos.writeUTF(s_response);
 			s_dos.flush();
-		
+			String user_response = s_dis.readUTF();
+			CommTool.wirte2file(client_filename, user_response );
 		}
 
 		

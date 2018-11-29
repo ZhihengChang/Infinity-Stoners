@@ -9,8 +9,8 @@ import java.util.Scanner;
 
 public final class CommTool {
 	
-	final static String FILE_PERFIX_CLIENT = "Server/Data/Client_"; //Thread to Server
-	final static String FILE_PERFIX_SERVER = "Server/Data/Server_"; //Server to Thread
+	final static String FILE_PERFIX_CLIENT = "Server//Data//Client_"; //Thread to Server
+	final static String FILE_PERFIX_SERVER = "Server//Data//Server_"; //Server to Thread
 	
 	final static String PLAYER = "PLAYER";
 	
@@ -20,6 +20,8 @@ public final class CommTool {
     final static String ACTION_SHOWC = "ACTION:ShowCard";
     final static String ACTION_EXIT = "ACTION:Exit";
     final static String ACTION_NEWG = "ACTION:NewGame";
+    final static String ACTION_RESULT = "ACTION:Result";
+    final static String ACTION_TURNEND = "ACTION:TurnEnd";
     
     final static String RESULT_WIN = "RESULT:Win";
     final static String RESULT_LOST = "RESULT:Lost";
@@ -104,7 +106,12 @@ public final class CommTool {
   		return "";
 
 
-      	}   
+      	} 
+   public static boolean check_response(String filename, String identify_key) {
+	   if(readfile(filename).startsWith(identify_key))
+			   return true;	   
+	   return false;
+   }
     
     public static void wirte2file(String filename, String msg) throws IOException {
  		File client_file = new File(filename);
@@ -142,5 +149,10 @@ public final class CommTool {
  		
  		return response;
  	}
+     
+     public static void deletFile(String filename) {
+    	 	new File(filename).delete();
+
+     }
 
 }

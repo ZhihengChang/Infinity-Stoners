@@ -1,5 +1,7 @@
 package game;
 
+import java.util.Hashtable;
+
 public class Player {
 	private String id;
 	private Deck deck;
@@ -150,8 +152,31 @@ public class Player {
 		return str;
 	}
 
-	public static void main(String[] args) {
-
+	public static void main1(String[] args) {
+		Hashtable<String, Player> players = new Hashtable<String, Player>();
+		Pile pile = new Pile();
+		Deck deck1 = new Deck();
+		Deck deck2 = new Deck();
+		int times = pile.getSize();
+		for(int i=0; i<times; i++) {
+			if(i%2 == 0) {
+				deck1.addCardToDeck(pile.remove());
+			}else {
+				deck2.addCardToDeck(pile.remove());
+			}
+		}
+		
+		//player2.addDeck(deck2);
+		Player p = new Player();
+		players.put("1", p);
+		players.get("1").addDeck(deck1);
+		System.out.println("Top card " + players.get("1").revealACard().toString() + "has been removed");
+		System.out.println("Removed deck: " + players.get("1").getRemovedCards().toString());
+		System.out.println("Player deck: " + players.get("1").deck.toString());
+		System.out.println();
+		System.out.println("Top card " + players.get("1").revealACard().toString() + "has been removed");
+		System.out.println("Removed deck: " + players.get("1").getRemovedCards().toString());
+		System.out.println("Player deck: " + players.get("1").deck.toString());
 	}
 
 }

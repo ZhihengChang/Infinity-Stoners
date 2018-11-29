@@ -7,7 +7,10 @@ import java.util.Scanner;
 
 public class Client {
 
-
+	/*
+	 * turn_counter
+	 * new game
+	 */
     
     private Socket socket;
     private String client_id;
@@ -17,7 +20,7 @@ public class Client {
     private DataOutputStream dos;
     private Scanner input;
     private String do_next;
-    
+    private int client_turn_counter;
     private String player_name;
     
 	public Client(String id, String address, int port) {
@@ -69,19 +72,22 @@ public class Client {
 	 
         
 	}
+	
+	public void check_and_set_doNext(String c_response, String msg_to_server) {
+		if(c_response.trim().equals("")) { // Type enter
+			
+			do_next = msg_to_server;			
+		}else if(c_response.equalsIgnoreCase("exit")) {
+			do_next = ClientTool.ACTION_EXIT	;			
+		}
+	}
 	 
 	public void do_ready(String response) throws Exception{
 		// user input: enter, exit
 		if(response.startsWith(ClientTool.ACTION_READY)) {
 			String result = ClientTool.get_input_from_screen(input, "press Enter to reveal the top card of your deck:");
- 
-			if(result.equals("")) { // Type enter
-				System.out.println("user typed enter");
-				
-				do_next = ClientTool.ACTION_NEWT;				
-			}else if(result.equalsIgnoreCase("exit")) {
-				do_next = ClientTool.ACTION_EXIT	;			
-			}
+			check_and_set_doNext(result, ClientTool.ACTION_NEWT);
+
 			send(do_next);
 		
 		}
@@ -89,32 +95,41 @@ public class Client {
 	}
 	public void do_show_card(String response) throws Exception{
 		if(response.startsWith(ClientTool.ACTION_SHOWC)) {
+			
 			String your_card = response.split(":")[2];
 			String opp_card = response.split(":")[3];
 			System.out.println("Your card is: " + your_card);
 			System.out.println("Your opponent's card is: " + opp_card);
+			
+			String result = ClientTool.get_input_from_screen(input, "press Enter to continue:");
+			
+			check_and_set_doNext(result, ClientTool.ACTION_RESULT);
+			send(do_next);
 		}
 		
 	}
-	public void do_win(String response) throws Exception{
-		//Result:Win:num of cards u win
+	
+	public void do_result(String response) throws Exception{
+		//do win
 		if(response.startsWith(ClientTool.RESULT_WIN)) {
-		 
+			 
 			System.out.println("*You WIN the turn!");
 			System.out.println("You gets All " + response.split(":")[2] + " cards");
 			
 		}
-	}
-	
-	public void do_lost(String response) throws Exception{
+		//do lost
 		if(response.startsWith(ClientTool.RESULT_LOST)) {
-			System.out.println("*You LOST the turn.");
+				System.out.println("*You LOST the turn.");
 		}
-	}
-	public void do_war(String response) throws Exception{
+		//do war
 		if(response.startsWith(ClientTool.RESULT_WAR)) {
 			System.out.println("!!!YOU AND YOUR OPPONENT ARE AT WAR!!!");
 		}
+		
+		String result = ClientTool.get_input_from_screen(input, "press Enter to continue:");
+		check_and_set_doNext(result, ClientTool.ACTION_TURNEND);
+		send(do_next);
+		
 	}
 	
 	public void do_timeout(String response) throws Exception{
@@ -124,6 +139,8 @@ public class Client {
 			do_next = ClientTool.ACTION_EXIT;
 		}
 	}
+	
+	
 		
 	public void do_end(String response) throws Exception{
 		if(response.startsWith(ClientTool.GAME_END)) {
@@ -187,26 +204,27 @@ public class Client {
 				try {
 					response = client.getServerMessage();
 					if(response != null) {
-						
+						client.do_next="";
 						client.do_ready(response);
 						if(client.do_next == ClientTool.ACTION_EXIT) {
 							break;
 						}
+						client.do_next="";
 						client.do_show_card(response);
 						if(client.do_next == ClientTool.ACTION_EXIT) {
 							break;
 						}
-						
-						client.do_win(response);
-						
-						client.do_lost(response);
-						
-						client.do_war(response);
-						
+						client.do_next="";
+						client.do_result(response);
+						if(client.do_next == ClientTool.ACTION_EXIT) {
+							break;
+						}
+						client.do_next="";
 						client.do_timeout(response);
 						if(client.do_next == ClientTool.ACTION_EXIT) {
 							break;
 						}
+						client.do_next="";
 						client.do_end(response);
 						if(client.do_next == ClientTool.ACTION_EXIT) {
 							Thread.sleep(2000);
