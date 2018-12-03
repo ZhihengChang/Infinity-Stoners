@@ -1,6 +1,10 @@
 package game;
 
 import java.util.Hashtable;
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
+ */
 
 public class Player {
 	private String id;

@@ -12,6 +12,11 @@ import java.util.*;
 import java.util.logging.Level;
 
 import game.*;
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
+ */
+
 public class ClientListener extends Thread {
 
 	private Socket socket; 
@@ -54,7 +59,7 @@ public class ClientListener extends Thread {
 		//get server action from data file.
 		this.cur_action_counter = 0;
 		this.do_next = STool.INIT_START;
-		STool.log_config(STool.clients_logger, this.client_log_file , Level.OFF);
+		STool.log_config(STool.clients_logger, this.client_log_file , Level.ALL);
 		STool.server_logger.info("THREAD: Client id:[" + client_id + "]");
 		
 	}

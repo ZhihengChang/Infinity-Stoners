@@ -2,11 +2,11 @@ package game;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * @author 
- *
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
  */
+
 public class Pile {
 	private static List<Card> cards;
 	/**

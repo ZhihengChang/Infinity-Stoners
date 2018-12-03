@@ -6,10 +6,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.*;
 
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
+ */
+
+
 public final class STool {
-	
-    //turn 1: S1, A0, B0; A2, B2; S3
-    //S1(A&B):A2(SUR), S2(A&B):SUR(A2.B1) B3:new game (S2 A2), S4:ready, A5 B5
+
 	
 	//(s) server only
 	//(c) client only

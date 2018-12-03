@@ -1,4 +1,8 @@
 package game;
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
+ */
 
 public enum Rank {
 	//Element   Display Name    Graphic     Priority 

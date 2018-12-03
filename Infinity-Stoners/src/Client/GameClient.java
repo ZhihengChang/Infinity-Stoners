@@ -8,6 +8,10 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import Server.STool;
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
+ */
 
 public class GameClient {
 	private Socket socket;

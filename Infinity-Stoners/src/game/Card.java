@@ -2,16 +2,12 @@ package game;
 
 import java.io.Serializable;
 
-/**
- * 
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
  */
 
 
-
-/**
- * @author 
- *
- */
 public class Card implements Comparable<Card> ,Serializable {
 
 	private final String GRAPHIC;

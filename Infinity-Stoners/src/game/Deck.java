@@ -3,11 +3,11 @@ package game;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * @author 
- *
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
  */
+
 public class Deck extends Pile implements Serializable {
 	private List<Card> cards;
 	

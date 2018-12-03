@@ -18,21 +18,24 @@ import game.Deck;
 import game.Pile;
 import game.Player;
 
+/*
+ * @author: Zhiheng Chang
+ * @date: Dec/02/2018
+ */
+
 public class GameServer {
-	//private Socket socket; 
+
     private ServerSocket server; 
     
     private Queue<Socket> sockets;
-  //  private Queue<Thread> threads;
+
     private Hashtable<String, Player> players; // id and player
     private Hashtable<Socket, String> Clients; // socket and id
+    
     private Hashtable<Socket, DataInputStream> s_dis;
     private Hashtable<Socket, DataOutputStream> s_dos;
-    private Hashtable<Socket, String> next_action;
-  //  private int num_of_client;
     
- 
-     
+    private Hashtable<Socket, String> next_action;
     private Hashtable<Socket, Integer> ser_action_counters; //key:clientId, value:action counter
 
     private int threads_counter;
@@ -49,7 +52,7 @@ public class GameServer {
     		this.ser_action_counters = new Hashtable<Socket, Integer>();
     		this.next_action = new Hashtable<Socket, String>();
     		this.threads_counter = 0;
-    		STool.log_config(STool.server_logger, STool.FILE_PERFIX_LOG + "game.log", Level.OFF);
+    		STool.log_config(STool.server_logger, STool.FILE_PERFIX_LOG + "game.log", Level.ALL);
     		
     }
  
